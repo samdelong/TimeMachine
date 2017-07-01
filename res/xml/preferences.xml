@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference android:title="Record Mic"
+                        android:key="mic"
+                        android:summary="Use system microphone as audio. *WARNING* Will affect battery life and phone performance"></CheckBoxPreference>
+    <ListPreference     android:title="Video Resolution"
+                        android:summary="Resolution/Quality of video"
+                        android:key="res"
+                        android:defaultValue="Default"
+                        android:entries="@array/resArray"/>
+</PreferenceScreen>

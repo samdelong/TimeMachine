@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Time Machine</string>
+    <string name="title_moments">Moments</string>
+    <string name="title_settings">Settings</string>
+</resources>
