@@ -2,6 +2,7 @@ package com.samdelong.timemachine;
 
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceActivity;
@@ -10,6 +11,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 import android.Manifest;
@@ -124,9 +126,9 @@ public class MainActivity extends AppCompatActivity {
 	private Integer _fps;
 	private Integer rNumber;
 	private CheckBox micCheck;
+	private WindowManager fcWindowManager;
 	final Handler handler = new Handler();
 	Runnable runnable;
-	File directory;
 	NotificationManager mNotificationManager;
 	private ViewFlipper mainFlipper;
 	private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -165,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
 	private void setup(){
 		//Make sure there are no files in the temp folder
-		directory = Environment
+		File directory = Environment
 				.getExternalStoragePublicDirectory(Environment
 						.DIRECTORY_DOWNLOADS + "/TimeMachine/temp/");
 		directory.mkdirs();
@@ -228,6 +230,94 @@ public class MainActivity extends AppCompatActivity {
 		//Finished with setup
 	}
 
+
+	void openSavedAlert(){
+
+
+
+		try {
+			Display display = getWindowManager().getDefaultDisplay();
+			Point size = new Point();
+			display.getSize(size);
+			int width = size.x;
+			int height = size.y;
+			fcWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+			TextView savedV = new TextView(MainActivity.this);
+			savedV.setText("Recording Saved!");
+			final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+					400,
+					400,
+					WindowManager.LayoutParams.TYPE_PHONE,
+					WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION,
+					PixelFormat.TRANSLUCENT);
+			params.gravity = Gravity.TOP | Gravity.CENTER;
+			params.x = 50;
+			params.y = 50;
+			savedV.setAlpha(0f);
+			savedV.setTypeface(Typeface.DEFAULT_BOLD);
+			savedV.setTextColor(-1);
+			fcWindowManager.addView(savedV, params);
+			savedV.animate().alpha(1f).setDuration(1000);
+			fcWindowManager.removeView(savedV);
+		}catch(Exception ignored){}
+
+	}
+
+	@Override
+	protected void onNewIntent(Intent intent){
+	super.onNewIntent(intent);
+		try {
+			mMediaRecorder.stop();
+			mMediaRecorder.reset();
+			handler.removeCallbacks(runnable);
+			manageNotify(false);
+		} catch (Exception f) {
+
+			handler.removeCallbacks(runnable);
+
+		}
+	mergeVideo();
+
+		initRecorder();
+		shareScreen();
+		//Start loop recording timer
+		startTimer();
+
+	}
+
+	void manageNotify(Boolean isStart){
+
+		if(isStart){
+
+			mNotificationManager = (NotificationManager)
+					this.getSystemService(Context.NOTIFICATION_SERVICE);
+
+			Intent notificationIntent = new Intent(this, MainActivity.class);
+			notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|
+					Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+			PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, 0);
+			NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.drawable.ic_menu_camera, "Save moment!", contentIntent).build();
+
+			NotificationCompat.Builder mBuilder =
+					new NotificationCompat.Builder(this)
+							.setSmallIcon(R.drawable.ic_menu_camera)
+							.setContentTitle(getString(R.string.app_name))
+							.setContentText("Recording...")
+							.addAction(action)
+							.setContentIntent(contentIntent)
+							.setPriority(Notification.PRIORITY_MAX)
+							.setWhen(0);
+			mNotificationManager.notify(001, mBuilder.build());
+
+		}
+		else{
+			mNotificationManager.cancelAll();
+		}
+
+
+	}
+
 	//Get recordings, add them to the list, and give user interface for sharing, deleting and renaming
 	public void getRecordings() {
 
@@ -235,7 +325,7 @@ public class MainActivity extends AppCompatActivity {
 		myList = new ArrayList<String>();
 		TextView noRecordings = (TextView) findViewById(R.id.noRecordingsView);
 		final File file;
-		File directory = new File(Environment.getExternalStorageDirectory() + "/DCIM/temp/");
+		File directory = new File(Environment.getExternalStorageDirectory() + "/Download/TimeMachine/v/");
 
 		directory.mkdirs();
 		file = new File(directory + "");
@@ -380,31 +470,35 @@ public class MainActivity extends AppCompatActivity {
 	public void onToggleScreenShare(final View view) {
 getRecordings();
 		if (((Switch) view).isChecked()) {
-			File directory = Environment
-					.getExternalStoragePublicDirectory(Environment
-							.DIRECTORY_DOWNLOADS + "/TimeMachine/temp/");
-			File file = new File(directory + "");
-			final File list[] = file.listFiles();
-			for(int i = 1;i<list.length;i++){
-				list[i].delete();
-			}
-			//Start recorder and get permissions
-			initRecorder();
-			shareScreen();
-			//Start loop recording timer
-			startTimer();
 
-		} else {
+			try {
+				File directory = Environment
+						.getExternalStoragePublicDirectory(Environment
+								.DIRECTORY_DOWNLOADS + "/TimeMachine/temp/");
+				File file = new File(directory + "");
+				final File list[] = file.listFiles();
+				for (int i = 0; i < list.length; i++) {
+					list[i].delete();
+				}
+				//Start recorder and get permissions
+				initRecorder();
+				shareScreen();
+				//Start loop recording timer
+				startTimer();
+				manageNotify(true);
+			}catch(Exception e){
+
+				mToggleButton.setChecked(false);
+
+			}
+		}else {
 
 			try {
 				mMediaRecorder.stop();
 				mMediaRecorder.reset();
 				handler.removeCallbacks(runnable);
-				//Use mp4 parser to merge the two recordings together
-				mergeVideo();
-
-
-			} catch (IllegalStateException f) {
+				manageNotify(false);
+			} catch (Exception f) {
 
 				handler.removeCallbacks(runnable);
 
@@ -473,7 +567,7 @@ getRecordings();
 			Date d = new Date();
 			String s = dateFormat.format(d).replace(":","_");
 			WritableByteChannel fc = new RandomAccessFile(
-					String.format(Environment.getExternalStorageDirectory() + "/DCIM/temp/" + s +
+					String.format(Environment.getExternalStorageDirectory() + "/Download/TimeMachine/v/" + s +
 
 							".mp4" ), "rw").getChannel();
 			Log.i("this", "afterwritable");
@@ -487,25 +581,25 @@ getRecordings();
 				list[i].delete();
 			}
 			getRecordings();
-
+			openSavedAlert();
+			manageNotify(true);
 		}catch(Exception e) {
-
-			FileNotFoundException f = new FileNotFoundException();
+			File directory = Environment
+					.getExternalStoragePublicDirectory(Environment
+							.DIRECTORY_DOWNLOADS + "/TimeMachine/temp/");
+			File file = new File(directory + "");
+			final File list[] = file.listFiles();
 
 
 			SimpleDateFormat dateFormat = new SimpleDateFormat("dd:hh:mm:s");
 			Date d = new Date();
 			String s = dateFormat.format(d).replace(":","_");
-			File directory = Environment
-					.getExternalStoragePublicDirectory(Environment
-							.DIRECTORY_DOWNLOADS + "/TimeMachine/temp/");
-			File gg = new File(directory + "/0.mp4");
-			gg.renameTo(new File(Environment.getExternalStorageDirectory() + "/DCIM/temp/" + s));
+			File gg = new File(directory + "0.mp4");
+			gg.renameTo(new File(Environment.getExternalStorageDirectory() + "/Download/TimeMachine/v/" + s + ".mp4"));
 			getRecordings();
-
-
 			e.printStackTrace();
-
+			openSavedAlert();
+			manageNotify(true);
 		}
 	}
 
