@@ -121,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
 	private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
 	private static final int REQUEST_PERMISSIONS = 10;
 	private List<String> myList;
+	private Integer imageList[];
 	private Integer _recWidth;
 	private Integer _recHeight;
 	private Integer _fps;
@@ -158,8 +159,8 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_main);
 		mainFlipper = (ViewFlipper) findViewById(R.id.viewFlipperMain);
 		rNumber = 0;
-		BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-		navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+		//BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+		//navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 		setup();
 		getRecordings();
 	}
@@ -272,18 +273,28 @@ public class MainActivity extends AppCompatActivity {
 			handler.removeCallbacks(runnable);
 			manageNotify(false);
 		} catch (Exception f) {
-
+			f.printStackTrace();
 			handler.removeCallbacks(runnable);
 
 		}
-	mergeVideo();
 
+		mergeVideo();
+		File directory = Environment
+				.getExternalStoragePublicDirectory(Environment
+						.DIRECTORY_DOWNLOADS + "/TimeMachine/temp/");
+		File file = new File(directory + "");
+		final File list[] = file.listFiles();
+		for (int i = 0; i < list.length; i++) {
+			list[i].delete();
+		}
 		initRecorder();
 		shareScreen();
-		//Start loop recording timer
 		startTimer();
+		getRecordings();
+		manageNotify(true);
 
 	}
+
 
 	void manageNotify(Boolean isStart){
 
@@ -323,6 +334,7 @@ public class MainActivity extends AppCompatActivity {
 
 		final GridView listView = (GridView) findViewById(R.id.recordingsList);
 		myList = new ArrayList<String>();
+
 		TextView noRecordings = (TextView) findViewById(R.id.noRecordingsView);
 		final File file;
 		File directory = new File(Environment.getExternalStorageDirectory() + "/Download/TimeMachine/v/");
@@ -331,6 +343,7 @@ public class MainActivity extends AppCompatActivity {
 		file = new File(directory + "");
 		try {
 			final File list[] = file.listFiles();
+
 			if (list.length == 0) {
 				noRecordings.setAlpha(1f);
 			} else {
@@ -343,6 +356,7 @@ public class MainActivity extends AppCompatActivity {
 				}
 
 			}
+
 			ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
 					android.R.layout.simple_list_item_1, android.R.id.text1, myList);
 			listView.setAdapter(adapter);
@@ -582,26 +596,31 @@ getRecordings();
 			}
 			getRecordings();
 			openSavedAlert();
-			manageNotify(true);
 		}catch(Exception e) {
 			File directory = Environment
 					.getExternalStoragePublicDirectory(Environment
 							.DIRECTORY_DOWNLOADS + "/TimeMachine/temp/");
+
+
 			File file = new File(directory + "");
 			final File list[] = file.listFiles();
-
 
 			SimpleDateFormat dateFormat = new SimpleDateFormat("dd:hh:mm:s");
 			Date d = new Date();
 			String s = dateFormat.format(d).replace(":","_");
-			File gg = new File(directory + "0.mp4");
-			gg.renameTo(new File(Environment.getExternalStorageDirectory() + "/Download/TimeMachine/v/" + s + ".mp4"));
-			getRecordings();
+			File gg = new File(list[0].getPath());
+
+			File newFile = new File(Environment.getExternalStorageDirectory() + "/Download/TimeMachine/v/" + s + ".mp4");
+			boolean ssss = gg.renameTo(newFile);
+
+			Log.i("FILEEEE",String.valueOf(ssss));
+			Log.i("FILEEEE",gg.getPath());
+
 			e.printStackTrace();
-			openSavedAlert();
-			manageNotify(true);
 		}
 	}
+
+
 
 	//Loop recording timer
 	void startTimer() {
