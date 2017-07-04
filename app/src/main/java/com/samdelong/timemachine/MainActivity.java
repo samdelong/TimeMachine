@@ -81,6 +81,8 @@ import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
 import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
 import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
 */
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.googlecode.mp4parser.BasicContainer;
 import com.googlecode.mp4parser.authoring.Movie;
 import com.googlecode.mp4parser.authoring.Track;
@@ -132,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
 	final Handler handler = new Handler();
 	Runnable runnable;
 	Integer nextInt;
+	Button savebutton;
 	NotificationManager mNotificationManager;
 	private ViewFlipper mainFlipper;
 	private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -165,6 +168,14 @@ public class MainActivity extends AppCompatActivity {
 		//navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 		setup();
 		getRecordings();
+		AdView mAdView;
+		mAdView = (AdView) findViewById(R.id.adView);
+		AdRequest request = new AdRequest.Builder()
+				.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
+				.addTestDevice(Settings.Secure.getString(this.getContentResolver(),
+						Settings.Secure.ANDROID_ID))  // My Galaxy Nexus test phone
+				.build();
+		mAdView.loadAd(request);
 	}
 
 
@@ -183,6 +194,39 @@ public class MainActivity extends AppCompatActivity {
 		}catch(NullPointerException ignored){
 
 		}
+
+		savebutton = (Button) findViewById(R.id.savebutton);
+		savebutton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				try {
+					mMediaRecorder.stop();
+					mMediaRecorder.reset();
+					handler.removeCallbacks(runnable);
+					manageNotify(false);
+				} catch (Exception f) {
+					f.printStackTrace();
+					handler.removeCallbacks(runnable);
+
+				}
+
+				mergeVideo();
+				File directory = Environment
+						.getExternalStoragePublicDirectory(Environment
+								.DIRECTORY_DOWNLOADS + "/TimeMachine/temp/");
+				File file = new File(directory + "");
+				final File list[] = file.listFiles();
+				for (int i = 0; i < list.length; i++) {
+					list[i].delete();
+				}
+				initRecorder();
+				shareScreen();
+				startTimer();
+				getRecordings();
+				manageNotify(true);
+
+			}
+		});
 		//Setup Media Recording and Projection
 		DisplayMetrics metrics = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(metrics);

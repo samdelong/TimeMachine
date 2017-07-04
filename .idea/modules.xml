@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/TimeMachineGit.iml" filepath="$PROJECT_DIR$/TimeMachineGit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TimeMachine.iml" filepath="$PROJECT_DIR$/TimeMachine.iml" />
+      <module fileurl="file://C:\Users\samdelong\Desktop\TimeMachine\TimeMachineGit.iml" filepath="C:\Users\samdelong\Desktop\TimeMachine\TimeMachineGit.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://C:\Users\samdelong\Desktop\TimeMachine\app\app.iml" filepath="C:\Users\samdelong\Desktop\TimeMachine\app\app.iml" />
     </modules>
   </component>
 </project>

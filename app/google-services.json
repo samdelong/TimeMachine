@@ -1,0 +1,66 @@
+{
+  "project_info": {
+    "project_number": "587621679725",
+    "firebase_url": "https://timemachine-ee6a8.firebaseio.com",
+    "project_id": "timemachine-ee6a8",
+    "storage_bucket": "timemachine-ee6a8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:587621679725:android:c993235d4418dc56",
+        "android_client_info": {
+          "package_name": "com.samdelong.timemachine"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "587621679725-eb3ka9mq7dkkjl5c5stlm5ngi34g38bv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.samdelong.timemachine",
+            "certificate_hash": "a232ed9ea050a1cc68477d72b708ca2d05e40c08"
+          }
+        },
+        {
+          "client_id": "587621679725-ellequ1gph9b9rfokalvf3o23uefd2lv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.samdelong.timemachine",
+            "certificate_hash": "de17f544adc1d6ec3d59750d70c44d3d9280c9e1"
+          }
+        },
+        {
+          "client_id": "587621679725-dt7b0q028a2q5bqgnfmv76un836vbbub.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9MHaiv183KfgJ8H3m6svvGWfC4IJnRqk"
+        },
+        {
+          "current_key": "AIzaSyDWcmcmaxpCOoMEEZsQ-pFsc8ZqfBMplyQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "587621679725-dt7b0q028a2q5bqgnfmv76un836vbbub.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

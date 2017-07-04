@@ -28,14 +28,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-
+                <Button
+                    android:id="@+id/savebutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/textView"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:text="Save!"
+                    android:layout_centerHorizontal="true"
+                    />
                 <GridView
                     android:id="@+id/recordingsList"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_above="@+id/adView"
                     android:layout_alignParentEnd="true"
-                    android:layout_below="@+id/toggleButton"/>
+                    android:layout_below="@+id/savebutton"
+                    />
 
                 <TextView
                     android:id="@+id/noRecordingsView"
@@ -67,7 +76,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     ads:adSize="BANNER"
-                    ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
+                    ads:adUnitId="@string/adunitid"
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true">
                 </com.google.android.gms.ads.AdView>
