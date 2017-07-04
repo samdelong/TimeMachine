@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 import android.Manifest;
@@ -130,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
 	private WindowManager fcWindowManager;
 	final Handler handler = new Handler();
 	Runnable runnable;
+	Integer nextInt;
 	NotificationManager mNotificationManager;
 	private ViewFlipper mainFlipper;
 	private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -314,10 +316,11 @@ public class MainActivity extends AppCompatActivity {
 					new NotificationCompat.Builder(this)
 							.setSmallIcon(R.drawable.ic_menu_camera)
 							.setContentTitle(getString(R.string.app_name))
-							.setContentText("Recording...")
+							.setContentText("Swipe down to save...")
 							.addAction(action)
 							.setContentIntent(contentIntent)
 							.setPriority(Notification.PRIORITY_MAX)
+							.setOngoing(true)
 							.setWhen(0);
 			mNotificationManager.notify(001, mBuilder.build());
 
@@ -352,7 +355,7 @@ public class MainActivity extends AppCompatActivity {
 			for (int i = 0; i < list.length; i++) {
 				if (list[i].isDirectory()) {
 				} else {
-					myList.add(list[i].getName().replace(".mp4", ""));
+					myList.add(list[i].getName().replace(".mp4", "").replace("_"," "));
 				}
 
 			}
@@ -577,12 +580,11 @@ getRecordings();
 			Log.i("this", "beforebasic");
 			BasicContainer out = (BasicContainer) new DefaultMp4Builder().build(result);
 			Log.i("this", "afterbasic");
-			SimpleDateFormat dateFormat = new SimpleDateFormat("dd:hh:mm:s");
+			SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm:s");
 			Date d = new Date();
-			String s = dateFormat.format(d).replace(":","_");
+			String s = dateFormat.format(d).replace(":","-");
 			WritableByteChannel fc = new RandomAccessFile(
-					String.format(Environment.getExternalStorageDirectory() + "/Download/TimeMachine/v/" + s +
-
+					String.format(Environment.getExternalStorageDirectory() + "/Download/TimeMachine/v/" + "Recording_At_" + s +
 							".mp4" ), "rw").getChannel();
 			Log.i("this", "afterwritable");
 
@@ -600,17 +602,21 @@ getRecordings();
 			File directory = Environment
 					.getExternalStoragePublicDirectory(Environment
 							.DIRECTORY_DOWNLOADS + "/TimeMachine/temp/");
-
+			File directory2 = Environment
+					.getExternalStoragePublicDirectory(Environment
+							.DIRECTORY_DOWNLOADS + "/TimeMachine/temp/");
 
 			File file = new File(directory + "");
 			final File list[] = file.listFiles();
 
-			SimpleDateFormat dateFormat = new SimpleDateFormat("dd:hh:mm:s");
+			SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm:s");
 			Date d = new Date();
-			String s = dateFormat.format(d).replace(":","_");
+			String s = dateFormat.format(d).replace(":","-");
 			File gg = new File(list[0].getPath());
 
-			File newFile = new File(Environment.getExternalStorageDirectory() + "/Download/TimeMachine/v/" + s + ".mp4");
+
+
+			File newFile = new File(Environment.getExternalStorageDirectory() + "/Download/TimeMachine/v/" + "Recording_At_" + s  + ".mp4");
 			boolean ssss = gg.renameTo(newFile);
 
 			Log.i("FILEEEE",String.valueOf(ssss));
@@ -681,12 +687,13 @@ getRecordings();
 		mVirtualDisplay = createVirtualDisplay();
 		mMediaRecorder.start();
 	}
+
 	private VirtualDisplay createVirtualDisplay() {
 		Display display = getWindowManager().getDefaultDisplay();
 		Point size = new Point();
 		display.getSize(size);
-		int width = size.x/2;
-		int height = size.y/2;
+		int width = size.x;
+		int height = size.y;
 
 		return mMediaProjection.createVirtualDisplay("MainActivity",
 				width, height, mScreenDensity,
@@ -720,7 +727,7 @@ getRecordings();
 			mMediaRecorder.setOutputFile(Environment
 					.getExternalStoragePublicDirectory(Environment
 							.DIRECTORY_DOWNLOADS) + "/TimeMachine/temp/" + rNumber + ".mp4");
-			mMediaRecorder.setVideoSize(width, height);
+			mMediaRecorder.setVideoSize(size.x, size.y);
 			mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
 			mMediaRecorder.setVideoEncodingBitRate(5000 * 4000);
 			mMediaRecorder.setVideoFrameRate(30);
